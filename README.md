@@ -242,3 +242,7 @@ float temperatura = 0;
 
 LiquidCrystal lcd(rs, e, d4, d5, d6, d7);
 ````
+# Link del projecto
+https://www.tinkercad.com/things/7GzFudXk5pL
+# Link del codigo fuente
+https://onlinegdb.com/Jm8BNFpeC
