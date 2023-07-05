@@ -85,3 +85,17 @@ implementado.
 MarkDown.
 
 # Funcion principal
+````
+void loop()
+{
+  temperatura = map(analogRead(TMP),0, 1023,-50,450);
+  delay(100);
+  lcd.print("Temperatura:");
+  lcd.print(temperatura);
+  delay(2000);
+  lcd.clear();
+  est(temperatura);
+  delay(2000);
+  lcd.clear();
+}
+````
