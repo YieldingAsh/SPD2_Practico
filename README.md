@@ -52,9 +52,11 @@ Define un umbral de temperatura a partir del cual se considera que hay un incend
 ejemplo, temperatura superior a 60 grados Celsius).
 Cuando se detecta un incendio (temperatura por encima del umbral), se activa el servo
 motor para simular una respuesta del sistema de incendio.
+
 Mensajes en el display LCD:
 Muestra la temperatura actual y la estación del año en el display LCD.
 Cuando se detecta un incendio, muestra un mensaje de alarma en el display LCD.
+
 Punto libre:
 Se deberá agregar dos leds y darle una funcionalidad de su elección, acorde al
 proyecto previamente detallado.
@@ -62,17 +64,24 @@ proyecto previamente detallado.
 Recuerda proporcionar un diagrama de conexiones y el código necesario para implementar
 cada una de las funcionalidades requeridas. Esto ayudará a comprender y construir el
 sistema de incendio con Arduino.
+
 Aclaraciones para la aprobación de la parte práctica:
 • Debe haber buen uso de las funciones.
 • El código debe ser prolijo y legible.
 
 1- debe poder explicar cada punto
+
 2- debe poder modificar la funcionalidad agregando lo que sea necesario
+
 3- Documentación:
+
 • Deberán presentar un diagrama esquemático del circuito y explicar el
 funcionamiento aplicado de cada componente.
+
 • Presentar el código fuente del proyecto de Arduino listo para ser
 implementado.
+
 • Deberán explicar el funcionamiento integral utilizando documentación
 MarkDown.
+
 # Funcion principal
