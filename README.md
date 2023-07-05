@@ -9,16 +9,27 @@ Objetivo:
 El objetivo de este proyecto es diseñar un sistema de incendio utilizando Arduino que pueda
 detectar cambios de temperatura y activar un servo motor en caso de detectar un incendio.
 Además, se mostrará la temperatura actual y la estación del año en un display LCD.
+
 Componentes necesarios:
+
 Arduino UNO
+
 Sensor de temperatura
+
 Control remoto IR (Infrarrojo)
+
 Display LCD (16x2 caracteres)
+
 Servo motor
+
 Cables y resistencias según sea necesario
+
 Protoboard para realizar las conexiones
+
 Dos leds.
+
 Funcionalidad requerida:
+
 Conexiones:
 Conecta el sensor de temperatura al pin analógico A0 de Arduino.
 Conecta el control remoto IR al pin digital 11 de Arduino.
