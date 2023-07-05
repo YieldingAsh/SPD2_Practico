@@ -85,6 +85,7 @@ implementado.
 MarkDown.
 
 # Funcion principal
+-La funcion loop es la funcion principal la cual toma el valor del sensor de temperatura luego lo imprime en el display, despues borrra lo que esta en el display y llama a la funcion est la cual imprime en el display en que estacion estamos o si hay un incendio
 ````
 void loop()
 {
@@ -98,4 +99,146 @@ void loop()
   delay(2000);
   lcd.clear();
 }
+````
+-Esta funcion se activa cuando se detectaron mas de 60 grados lo indica que hya un incendio, la funcion hace un loop la cual imprime en el display que la Alarma de Incendio esta Activada y llamara la funcion parpadeo para que encienda el led rojo y se apague, cada vez que se repira un servo motor va activarse y se movera un 1 grado de su angulo de 0 hasta 180, se repetira 180 veces luego volvera a resetearse el servomotor a un angulo de 0 y volvera a repetirse siendo 180 y asi hasta que con el contro remoto infrarojo se pulse el boton de apagado para desactivar la alarma.
+````
+void incendio(bool e)
+{
+  while (e)
+  {
+    for(int pos = 0; pos<=180; pos++)
+    {
+      lcd.print("Alarma Incendio");
+      lcd.setCursor(0,1);
+      lcd.print("Activada");
+      s1.write(pos);
+      parpadear();
+      if (IrReceiver.decode()) {        
+        Serial.println(IrReceiver.decodedIRData.decodedRawData, HEX); 
+        if (IrReceiver.decodedIRData.decodedRawData == Boton){
+          e = false;
+          break;
+        }
+        IrReceiver.resume();
+      }
+      lcd.clear();
+      delay(20);
+    }
+  }
+  s1.write(0);
+}
+````
+-Esta funcion solo enciende el led rojo y lo apaga para simular un parpadeo
+````
+void parpadear()
+{
+  digitalWrite(ledRojo, HIGH);
+  delay(500);
+  digitalWrite(ledRojo, LOW);
+  delay(500);
+}
+````
+-Esta es la funcion la cual se fija en que estacion del año se encuentra y lo imprime en el display y si se encuentra por encima de los 60 grados la temperatura llamara la funcion incendio para activar la alarma de incendio, ademas de que si es invierno se encendera un led azul en cambio si es cualquier otra estacion se apagara el led azul
+````
+void est(float i)
+{
+  	int a = 0;
+  	if(i < 12)
+    {
+      a = 0;
+    }
+    else if (i < 17)
+    {
+      a = 1;
+    }
+  	else if ( i < 21)
+    {
+      a = 2;
+    }
+  	else if (i < 60)
+    {
+      a = 3;
+    }
+  	else
+    {
+      a = 4;
+    }
+  
+  	switch(a)
+    {
+     case 0:
+     	lcd.print("Estacion:");
+        lcd.setCursor(0,1);
+        lcd.print("Invierno");
+      	digitalWrite(ledAzul, HIGH);
+      	break;
+     	
+     case 1:
+    	lcd.print("Estacion: Otono");
+      	digitalWrite(ledAzul, LOW);
+      	break;
+      
+     case 2:
+    	lcd.print("Estacion:");
+      	lcd.setCursor(0,1);
+        lcd.print("Primavera");
+      	digitalWrite(ledAzul, LOW);
+      	break;
+      
+     case 3:
+    	lcd.print("Estacion: Verano");
+      	digitalWrite(ledAzul, LOW);
+      	break;
+      
+   	 case 4:
+    	incendio(true);
+      	digitalWrite(ledAzul, LOW);
+      	break;
+    }
+}
+````
+-Esta funcion es el contructor
+````
+void setup()
+{
+  IrReceiver.begin(IR, DISABLE_LED_FEEDBACK);
+  Serial.begin(9600);
+  pinMode(ledAzul, OUTPUT);
+  pinMode(ledRojo, OUTPUT);
+  s1.attach(9);
+  lcd.begin(16,2);
+  s1.write(0);
+}
+````
+-Aca se pueden ver las librerias usadas y las variable declaradas.
+````
+#include <IRremote.h>
+
+#include <Servo.h>
+
+#include <LiquidCrystal.h>
+
+#define Boton 0xFF00BF00
+
+
+int rs = 2;
+int e = 3;
+int d4 = 4;
+int d5 = 5;
+int d6 = 6;
+int d7 = 7;
+int TMP = 0;
+int ledAzul = 8;
+int ledRojo = 10;
+int IR = 11;
+Servo s1;
+
+//pri mas 17 menor 25
+//vera mas 21 menos 24
+//oto mas 13 menor 28
+//invierno mas 8 menos 12
+
+float temperatura = 0;
+
+LiquidCrystal lcd(rs, e, d4, d5, d6, d7);
 ````
