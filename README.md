@@ -89,15 +89,56 @@ MarkDown.
 ````
 void loop()
 {
-  temperatura = map(analogRead(TMP),0, 1023,-50,450);
+  valor = analogRead(TMP);
+  voltaje = ((valor * 5.00) / 1024.00);
+  temperatura = ((voltaje - 0.5) * 100); 
   delay(100);
   lcd.print("Temperatura:");
   lcd.print(temperatura);
   delay(2000);
-  lcd.clear();
-  est(temperatura);
+  est();
+  comInc(temperatura, R);
   delay(2000);
   lcd.clear();
+}
+````
+-Funcion que comprueba si hay un incendio teniendo en cuenta la diferencia de temperatura de la estacion elejida
+````
+void comInc(float T, int A)
+{
+  switch (A)
+  {
+    case 0:
+    	if( T > 60)
+        {
+          incendio(true);
+        }
+    	break;
+    case 1:
+    	if( T > 15)
+        {
+          incendio(true);
+        }
+    	break;
+    case 2:
+    	if( T > 28)
+        {
+          incendio(true);
+        }
+    	break;
+    case 3:
+    	if( T > 25)
+        {
+          incendio(true);
+        }
+   		break;
+    case 4:
+    	if( T > 24)
+        {
+          incendio(true);
+        }
+    	break;
+  }
 }
 ````
 -Esta funcion se activa cuando se detectaron mas de 60 grados lo indica que hya un incendio, la funcion hace un loop la cual imprime en el display que la Alarma de Incendio esta Activada y llamara la funcion parpadeo para que encienda el led rojo y se apague, cada vez que se repira un servo motor va activarse y se movera un 1 grado de su angulo de 0 hasta 180, se repetira 180 veces luego volvera a resetearse el servomotor a un angulo de 0 y volvera a repetirse siendo 180 y asi hasta que con el contro remoto infrarojo se pulse el boton de apagado para desactivar la alarma.
@@ -140,61 +181,60 @@ void parpadear()
 ````
 -Esta es la funcion la cual se fija en que estacion del año se encuentra y lo imprime en el display y si se encuentra por encima de los 60 grados la temperatura llamara la funcion incendio para activar la alarma de incendio, ademas de que si es invierno se encendera un led azul en cambio si es cualquier otra estacion se apagara el led azul
 ````
-void est(float i)
+void est()
 {
-  	int a = 0;
-  	if(i < 12)
-    {
-      a = 0;
-    }
-    else if (i < 17)
-    {
-      a = 1;
-    }
-  	else if ( i < 21)
-    {
-      a = 2;
-    }
-  	else if (i < 60)
-    {
-      a = 3;
-    }
-  	else
-    {
-      a = 4;
-    }
-  
-  	switch(a)
-    {
-     case 0:
-     	lcd.print("Estacion:");
-        lcd.setCursor(0,1);
-        lcd.print("Invierno");
-      	digitalWrite(ledAzul, HIGH);
-      	break;
-     	
-     case 1:
-    	lcd.print("Estacion: Otono");
-      	digitalWrite(ledAzul, LOW);
-      	break;
-      
-     case 2:
-    	lcd.print("Estacion:");
-      	lcd.setCursor(0,1);
-        lcd.print("Primavera");
-      	digitalWrite(ledAzul, LOW);
-      	break;
-      
-     case 3:
-    	lcd.print("Estacion: Verano");
-      	digitalWrite(ledAzul, LOW);
-      	break;
-      
-   	 case 4:
-    	incendio(true);
-      	digitalWrite(ledAzul, LOW);
-      	break;
-    }
+  if (IrReceiver.decode()) { 
+      switch(IrReceiver.decodedIRData.decodedRawData)
+      {
+       case Boton1:
+          lcd.clear();
+          lcd.print("Estacion:");
+          lcd.setCursor(0,1);
+          lcd.print("Invierno");
+          digitalWrite(ledRojo, HIGH);
+          delay(2000);
+          R = 1;
+          break;
+
+       case Boton2:
+          lcd.clear();
+          lcd.print("Estacion: Otono");
+          digitalWrite(ledRojo, LOW);
+  		  delay(2000);
+          R = 2;
+          break;
+
+       case Boton3:
+          lcd.clear();
+          lcd.print("Estacion:");
+          lcd.setCursor(0,1);
+          lcd.print("Primavera");
+          digitalWrite(ledRojo, LOW);
+          delay(2000);
+          R = 3;
+          break;
+
+       case Boton4:
+          lcd.clear();
+          lcd.print("Estacion: Verano");
+          digitalWrite(ledRojo, LOW);
+          delay(2000);
+          R = 4;
+          break;
+
+       case Boton0:
+          lcd.clear();
+          lcd.print("Estacion:");
+          lcd.setCursor(0,1);
+          lcd.print("Ninguna");
+          digitalWrite(ledRojo, LOW);
+          delay(2000);
+          R = 0;
+          break;
+      }
+    Serial.println(IrReceiver.decodedIRData.decodedRawData, HEX); 
+    IrReceiver.resume();
+  }
 }
 ````
 -Esta funcion es el contructor
@@ -219,6 +259,13 @@ void setup()
 #include <LiquidCrystal.h>
 
 #define Boton 0xFF00BF00
+#define Boton0 0xF30CBF00
+#define Boton1 0xEF10BF00
+#define Boton2 0xEE11BF00
+#define Boton3 0xED12BF00
+#define Boton4 0xEB14BF00
+
+
 
 
 int rs = 2;
@@ -231,14 +278,17 @@ int TMP = 0;
 int ledAzul = 8;
 int ledRojo = 10;
 int IR = 11;
+int R = 0;
 Servo s1;
 
 //pri mas 17 menor 25
-//vera mas 21 menos 24
+//vera mas 21 menor 24
 //oto mas 13 menor 28
-//invierno mas 8 menos 12
+//invierno mas 8 menor 12
 
 float temperatura = 0;
+float valor = 0;
+float voltaje = 0;
 
 LiquidCrystal lcd(rs, e, d4, d5, d6, d7);
 ````
